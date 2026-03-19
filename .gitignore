@@ -1,5 +1,3 @@
 node_modules/
 dist/
-public/generated/
-public/atoms/
 .DS_Store

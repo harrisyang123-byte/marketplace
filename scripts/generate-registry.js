@@ -20,21 +20,7 @@ const MARKETPLACE_PATH = path.join(ROOT_DIR, '.claude-plugin/marketplace.json');
 const ATOMS_DIR = path.join(ROOT_DIR, 'atoms');
 const OUTPUT_DIR = path.join(ROOT_DIR, 'public/generated');
 const OUTPUT_PATH = path.join(OUTPUT_DIR, 'registry.json');
-const ATOMS_DEST = path.join(ROOT_DIR, 'public/atoms');
-
 // ─── 文件系统扫描 ────────────────────────────────────────────────────────────
-
-/**
- * 递归复制目录
- */
-function copyDirectory(src, dest) {
-  if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
-  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
-    const srcPath = path.join(src, entry.name);
-    const destPath = path.join(dest, entry.name);
-    entry.isDirectory() ? copyDirectory(srcPath, destPath) : fs.copyFileSync(srcPath, destPath);
-  }
-}
 
 /**
  * 扫描 atoms/ 目录，返回所有 atom 的基础信息
@@ -258,16 +244,6 @@ function generateRegistry() {
   if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   fs.writeFileSync(OUTPUT_PATH, JSON.stringify(registry, null, 2), 'utf-8');
   console.log(`💾 Registry written to: ${OUTPUT_PATH}\n`);
-
-  // 9. 同步 atoms 到 public/atoms
-  console.log('📁 Copying atoms to public/atoms...');
-  if (fs.existsSync(ATOMS_DIR)) {
-    if (fs.existsSync(ATOMS_DEST)) fs.rmSync(ATOMS_DEST, { recursive: true, force: true });
-    copyDirectory(ATOMS_DIR, ATOMS_DEST);
-    console.log(`   ✓ Copied to: ${ATOMS_DEST}\n`);
-  } else {
-    console.warn(`   ⚠ atoms directory not found: ${ATOMS_DIR}\n`);
-  }
 
   console.log('✅ Done!\n');
   console.log(`   Plugins: ${stats.totalPlugins}  |  Atoms: ${stats.totalAtoms}`);
